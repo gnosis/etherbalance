@@ -16,6 +16,11 @@ pub struct BalanceMonitor {
 
 impl BalanceMonitor {
     pub fn new(config: config::Config, web3: web3::Web3<DynTransport>) -> Result<Self> {
+        if config.tokens.iter().any(|(name, _address)| name == "ether") {
+            return Err(anyhow!(
+                "token name ether is cannot be used for ERC20 tokens"
+            ));
+        }
         let tokens = create_tokens(config.tokens, &web3);
         let addresses = create_addresses_to_monitor(config.addresses, &tokens)?;
         Ok(Self { web3, addresses })

@@ -2,6 +2,7 @@
 # A key names the address of an ERC20 token in a human readable form.
 # A value specifies the address of the token. The address is not case sensitive
 # but must start with "0x".
+# `ether` cannot be used as a key.
 usdt = "0xdac17f958d2ee523a2206206994597c13d831ec7"
 usdc = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
 
