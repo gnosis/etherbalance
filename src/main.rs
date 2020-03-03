@@ -148,3 +148,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         std::thread::sleep(opt.update_interval);
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn can_parse_example_config() {
+        let config = include_str!("../example_config.toml");
+        let _: config::Config = toml::from_str(config).unwrap();
+    }
+}
