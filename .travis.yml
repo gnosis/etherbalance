@@ -1,6 +1,11 @@
 language: rust
 rust: stable
-cache: cargo
+cache:
+  directories:
+    - $HOME/.cargo
+    - $HOME/.rustup
+before_cache:
+  - rm -rf /home/travis/.cargo/registry
 before_install:
   - rustup component add clippy rustfmt
   - cargo clippy --version
