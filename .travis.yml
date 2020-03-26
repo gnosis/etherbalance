@@ -1,5 +1,7 @@
 language: rust
 rust: stable
+services:
+  - docker
 cache:
   directories:
     - $HOME/.cargo
@@ -15,3 +17,8 @@ script:
   - cargo test --verbose
   - cargo fmt -- --check
   - cargo clippy --all-features -- -D warnings
+deploy:
+  - provider: script
+    script: ./docker/deploy.sh $TRAVIS_BRANCH
+    on:
+      branch: master
