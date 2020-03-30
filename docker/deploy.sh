@@ -3,7 +3,6 @@
 set -euo pipefail
 
 image_name=$1
-sudo apt-get update && sudo apt-get install -y python-pip && sudo pip install awscli
 echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin;
 docker build --tag $REGISTRY_URI:$image_name -f docker/Dockerfile .
 docker push $REGISTRY_URI:$image_name
