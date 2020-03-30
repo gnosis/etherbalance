@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -xeuo pipefail
+set -veuo pipefail
 
 tag_name=$1
 echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin;
