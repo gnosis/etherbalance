@@ -22,26 +22,26 @@ The balance information is exposed as a prometheus metric at `/metrics`. With th
 ```
 # HELP etherbalance_balance The ether or IERC20 balance of an ethereum address.
 # TYPE etherbalance_balance gauge
-etherbalance_balance{address_name="company-wallet",token_name="ether"} 74050712600851690000000
-etherbalance_balance{address_name="company-wallet",token_name="usdc"} 16964294292618
-etherbalance_balance{address_name="company-wallet",token_name="usdt"} 65753664330824
-etherbalance_balance{address_name="personal-wallet",token_name="ether"} 2330958999638355500000000
-etherbalance_balance{address_name="personal-wallet",token_name="usdc"} 6551827878171
-etherbalance_balance{address_name="personal-wallet",token_name="usdt"} 169538279813210
+etherbalance_balance{address="0x3f5ce5fbfe3e9af3971dd833d26ba9b5c936f0be",address_name="company-wallet",token_name="ether"} 208965276689158900000000
+etherbalance_balance{address="0x3f5ce5fbfe3e9af3971dd833d26ba9b5c936f0be",address_name="company-wallet",token_name="usdc"} 16234719511522
+etherbalance_balance{address="0x3f5ce5fbfe3e9af3971dd833d26ba9b5c936f0be",address_name="company-wallet",token_name="usdt"} 110017919015055
+etherbalance_balance{address="0xbe0eb53f46cd790cd13851d5eff43d12404d33e8",address_name="personal-wallet",token_name="ether"} 2318528098086858200000000
+etherbalance_balance{address="0xbe0eb53f46cd790cd13851d5eff43d12404d33e8",address_name="personal-wallet",token_name="usdc"} 49434572690562
+etherbalance_balance{address="0xbe0eb53f46cd790cd13851d5eff43d12404d33e8",address_name="personal-wallet",token_name="usdt"} 717944090350919
 # HELP etherbalance_last_update Unix time of last update of balances.
 # TYPE etherbalance_last_update gauge
-etherbalance_last_update 1582635522.0656123
+etherbalance_last_update 1586257843.7633243
 ```
 
 And additionally on stdout with `--print-balances`:
 
 ```
-address company-wallet ether balance is 74050712600851692475483
-address company-wallet usdt balance is 65753664330824
-address company-wallet usdc balance is 16964294292618
-address personal-wallet ether balance is 2330958999638355689873774
-address personal-wallet usdt balance is 169538279813210
-address personal-wallet usdc balance is 6551827878171
+address personal-wallet ether balance is 2318528098086858312934419
+address personal-wallet usdt balance is 717944090350919
+address personal-wallet usdc balance is 49434572690562
+address company-wallet ether balance is 208965276689158926934455
+address company-wallet usdt balance is 110017919015055
+address company-wallet usdc balance is 16234719511522
 ```
 
 This information is updated in the background with the specified

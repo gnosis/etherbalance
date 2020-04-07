@@ -14,6 +14,14 @@ pub struct BalanceMonitor {
     addresses: Vec<AddressToMonitor>,
 }
 
+#[derive(Debug)]
+pub struct CallbackParameters<'a> {
+    pub address_name: &'a str,
+    pub address: &'a Address,
+    pub token_name: &'a str,
+    pub balance: Result<U256>,
+}
+
 impl BalanceMonitor {
     pub fn new(config: config::Config, web3: web3::Web3<DynTransport>) -> Result<Self> {
         if config.tokens.iter().any(|(name, _address)| name == "ether") {
@@ -29,21 +37,27 @@ impl BalanceMonitor {
     /// Retrieve all balances and call a function for each.
     pub async fn do_with_balances<T>(&self, callback: T)
     where
-        T: Fn(
-            /*address_name: */ &str,
-            /*token_name: */ &str,
-            /*balance: */ Result<U256>,
-        ),
+        T: Fn(CallbackParameters),
     {
         // TODO: batch requests
         for address in &self.addresses {
             if address.monitor_ether {
                 let balance = ether_balance(address.address, &self.web3.eth()).await;
-                callback(&address.name, "ether", balance.map_err(Error::new));
+                callback(CallbackParameters {
+                    address_name: &address.name,
+                    address: &address.address,
+                    token_name: "ether",
+                    balance: balance.map_err(Error::new),
+                });
             }
             for token in &address.tokens {
                 let balance = erc20_balance(&token.contract, address.address).await;
-                callback(&address.name, &token.name, balance.map_err(Error::new));
+                callback(CallbackParameters {
+                    address_name: &address.name,
+                    address: &address.address,
+                    token_name: &token.name,
+                    balance: balance.map_err(Error::new),
+                });
             }
         }
     }
