@@ -132,8 +132,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     .with_label_values(&[
                         params.address_name,
                         params.token_name,
-                        // this seems to be the only way to print the full address
-                        &format!("{:?}", params.address),
+                        &format!("{:#x}", params.address),
                     ])
                     .set(u256_to_f64(balance)),
                 Err(err) => println!(
