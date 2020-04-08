@@ -94,7 +94,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             "etherbalance_balance",
             "The ether or IERC20 balance of an ethereum address.",
         ),
-        &["address_name", "token_name"],
+        &["address_name", "token_name", "address"],
     )?;
     let last_update_metric = prometheus::Gauge::new(
         "etherbalance_last_update",
@@ -123,17 +123,21 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // update balances
     let print_balances = opt.print_balances;
     loop {
-        futures::executor::block_on(monitor.do_with_balances(|address, token, balance| {
+        futures::executor::block_on(monitor.do_with_balances(|params| {
             if print_balances {
-                print_balance(address, token, &balance);
+                print_balance(params.address_name, params.token_name, &params.balance);
             }
-            match balance {
+            match params.balance {
                 Ok(balance) => balance_metric
-                    .with_label_values(&[address, token])
+                    .with_label_values(&[
+                        params.address_name,
+                        params.token_name,
+                        &format!("{:#x}", params.address),
+                    ])
                     .set(u256_to_f64(balance)),
                 Err(err) => println!(
                     "failed to get balance for address {} token {}: {}",
-                    address, token, err
+                    params.address, params.token_name, err
                 ),
             }
         }));
