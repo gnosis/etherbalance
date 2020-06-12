@@ -78,7 +78,9 @@ pub fn u256_to_f64(value: U256) -> f64 {
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let opt = Opt::from_args();
+    println!("Beginning service with configuration parameters {:?}", opt);
     let config: config::Config = toml::from_str(&std::fs::read_to_string(opt.config)?)?;
+    println!("Monitoring accounts {:?}", config);
 
     // web3
     let (event_loop_handle, transport) =
