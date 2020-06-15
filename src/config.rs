@@ -34,6 +34,7 @@ pub struct ConfigAddress {
     pub address: Address_,
     pub ether: bool,
     pub tokens: Vec<String>,
+    pub tag: Option<String>,
 }
 
 /// The user facing config file.

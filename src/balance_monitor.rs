@@ -20,6 +20,7 @@ pub struct CallbackParameters<'a> {
     pub address: &'a Address,
     pub token_name: &'a str,
     pub balance: Result<U256>,
+    pub tag: &'a str,
 }
 
 impl BalanceMonitor {
@@ -48,6 +49,7 @@ impl BalanceMonitor {
                     address: &address.address,
                     token_name: "ether",
                     balance: balance.map_err(Error::new),
+                    tag: &address.tag,
                 });
             }
             for token in &address.tokens {
@@ -57,6 +59,7 @@ impl BalanceMonitor {
                     address: &address.address,
                     token_name: &token.name,
                     balance: balance.map_err(Error::new),
+                    tag: &address.tag,
                 });
             }
         }
@@ -77,6 +80,7 @@ struct AddressToMonitor {
     address: Address,
     monitor_ether: bool,
     tokens: Vec<Rc<Token>>,
+    tag: String,
 }
 
 fn create_tokens(
@@ -119,6 +123,7 @@ fn create_addresses_to_monitor(
                 address: config_address.address.0,
                 monitor_ether: config_address.ether,
                 tokens: tokens?,
+                tag: config_address.tag.unwrap_or_default(),
             })
         })
         .collect()
