@@ -13,5 +13,7 @@ usdc = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
 # * ether specifies whether ether balance should be monitored.
 # * tokens specifies which ERC20 tokens should be monitored. All tokens must
 #   be named in the tokens section.
-personal-wallet = { address = "0xbe0eb53f46cd790cd13851d5eff43d12404d33e8", ether=true, tokens = ["usdt", "usdc"] }
+# * tag is an optional value put into the prometheus "tag" label for the
+#   address' metric.
+personal-wallet = { address = "0xbe0eb53f46cd790cd13851d5eff43d12404d33e8", ether=true, tokens = ["usdt", "usdc"], tag = "tag" }
 company-wallet = { address = "0x3f5ce5fbfe3e9af3971dd833d26ba9b5c936f0be", ether=true, tokens = ["usdt", "usdc"] }

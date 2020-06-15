@@ -96,7 +96,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             "etherbalance_balance",
             "The ether or IERC20 balance of an ethereum address.",
         ),
-        &["address_name", "token_name", "address"],
+        &["address_name", "token_name", "address", "tag"],
     )?;
     let last_update_metric = prometheus::Gauge::new(
         "etherbalance_last_update",
@@ -135,6 +135,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         params.address_name,
                         params.token_name,
                         &format!("{:#x}", params.address),
+                        params.tag,
                     ])
                     .set(u256_to_f64(balance)),
                 Err(err) => println!(
