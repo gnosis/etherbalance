@@ -98,12 +98,17 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         ),
         &["address_name", "token_name", "address", "tag"],
     )?;
+    let success_metric = prometheus::IntCounterVec::new(
+        prometheus::Opts::new("success_counter", "Success/Failure counts"),
+        &["result"],
+    )?;
     let last_update_metric = prometheus::Gauge::new(
         "etherbalance_last_update",
         "Unix time of last update of balances.",
     )?;
     let registry = prometheus::Registry::new();
     registry.register(Box::new(balance_metric.clone()))?;
+    registry.register(Box::new(success_metric.clone()))?;
     registry.register(Box::new(last_update_metric.clone()))?;
 
     // http server for metrics
@@ -130,18 +135,30 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 print_balance(params.address_name, params.token_name, &params.balance);
             }
             match params.balance {
-                Ok(balance) => balance_metric
-                    .with_label_values(&[
-                        params.address_name,
-                        params.token_name,
+                Ok(balance) => {
+                    balance_metric
+                        .with_label_values(&[
+                            params.address_name,
+                            params.token_name,
+                            &format!("{:#x}", params.address),
+                            params.tag,
+                        ])
+                        .set(u256_to_f64(balance));
+                    success_metric
+                        .with_label_values(&["success", &format!("{:#x}", params.address)])
+                        .inc()
+                }
+                Err(err) => {
+                    success_metric
+                        .with_label_values(&["failure", &format!("{:#x}", params.address)])
+                        .inc();
+                    println!(
+                        "failed to get balance for address {} token {}: {}",
                         &format!("{:#x}", params.address),
-                        params.tag,
-                    ])
-                    .set(u256_to_f64(balance)),
-                Err(err) => println!(
-                    "failed to get balance for address {} token {}: {}",
-                    params.address, params.token_name, err
-                ),
+                        params.token_name,
+                        err
+                    )
+                }
             }
         }));
         match std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH) {
