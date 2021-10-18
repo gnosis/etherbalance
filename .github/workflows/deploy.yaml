@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       AUTODEPLOY_URL: ${{ secrets.AUTODEPLOY_URL }}
-      DOCKER_NAME: ${{ secrets.DOCKER_NAME }}
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       REGISTRY_URI: "gnosispm/etherbalance"
     steps:
