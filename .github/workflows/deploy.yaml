@@ -12,6 +12,7 @@ jobs:
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       REGISTRY_URI: "gnosispm/etherbalance"
     steps:
+      - uses: actions/checkout@v2
       - name: Deploy Staging
         if: github.ref == 'refs/heads/master'
         run: bash docker/deploy.sh staging
