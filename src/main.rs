@@ -1,8 +1,8 @@
 mod balance_monitor;
 mod config;
 
-use anyhow::{anyhow, Context as _, Result};
-use ethcontract::DynTransport;
+use anyhow::{anyhow, Result};
+use ethcontract::dyns::DynTransport;
 use prometheus::Encoder as _;
 use std::net::SocketAddr;
 use std::path::PathBuf;

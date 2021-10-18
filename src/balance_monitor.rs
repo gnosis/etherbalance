@@ -1,7 +1,7 @@
 use crate::config;
 use anyhow::{anyhow, Error, Result};
-use ethcontract::DynTransport;
-use futures::compat::Future01CompatExt;
+use ethcontract::dyns::DynTransport;
+use futures::TryFutureExt;
 use std::collections::HashMap;
 use std::rc::Rc;
 use web3::error::Error as Web3Error;
