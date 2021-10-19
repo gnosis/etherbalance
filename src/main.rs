@@ -169,7 +169,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         // update_interval makes us actually update the balances less frequently
         // than update_interval. We could be more accurate and sleep the exact
         // time needed. In practice it does not matter.
-        std::thread::sleep(opt.update_interval);
+        tokio::time::sleep(opt.update_interval).await;
     }
 }
 
