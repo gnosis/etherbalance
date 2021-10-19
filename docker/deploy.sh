@@ -14,6 +14,6 @@ if [ -n "$AUTODEPLOY_URL" ]; then
       --write-out "%{http_code}" \
       -H "Content-Type: application/json" \
       -X POST \
-      -d '{"push_data": {"tag": "'$tag_name'" }}' \
+      -d '{"push_data": {"tag": "'$AUTODEPLOY_TAG'" }}' \
       $AUTODEPLOY_URL
 fi
