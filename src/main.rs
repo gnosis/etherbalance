@@ -129,38 +129,40 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // update balances
     let print_balances = opt.print_balances;
     loop {
-        futures::executor::block_on(monitor.do_with_balances(|params| {
-            if print_balances {
-                print_balance(params.address_name, params.token_name, &params.balance);
-            }
-            match params.balance {
-                Ok(balance) => {
-                    balance_metric
-                        .with_label_values(&[
-                            params.address_name,
-                            params.token_name,
+        monitor
+            .do_with_balances(|params| {
+                if print_balances {
+                    print_balance(params.address_name, params.token_name, &params.balance);
+                }
+                match params.balance {
+                    Ok(balance) => {
+                        balance_metric
+                            .with_label_values(&[
+                                params.address_name,
+                                params.token_name,
+                                &format!("{:#x}", params.address),
+                                params.tag,
+                            ])
+                            .set(u256_to_f64(balance));
+                        success_metric
+                            .with_label_values(&["success", &format!("{:#x}", params.address)])
+                            .inc();
+                        println!("Recorded at least one success.");
+                    }
+                    Err(err) => {
+                        success_metric
+                            .with_label_values(&["failure", &format!("{:#x}", params.address)])
+                            .inc();
+                        println!(
+                            "failed to get balance for address {} token {}: {}",
                             &format!("{:#x}", params.address),
-                            params.tag,
-                        ])
-                        .set(u256_to_f64(balance));
-                    success_metric
-                        .with_label_values(&["success", &format!("{:#x}", params.address)])
-                        .inc();
-                    println!("Recorded at least one success.");
+                            params.token_name,
+                            err
+                        )
+                    }
                 }
-                Err(err) => {
-                    success_metric
-                        .with_label_values(&["failure", &format!("{:#x}", params.address)])
-                        .inc();
-                    println!(
-                        "failed to get balance for address {} token {}: {}",
-                        &format!("{:#x}", params.address),
-                        params.token_name,
-                        err
-                    )
-                }
-            }
-        }));
+            })
+            .await;
         match std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH) {
             Ok(duration) => last_update_metric.set(duration.as_secs_f64()),
             Err(err) => println!("system time before epoch: {}", err),
