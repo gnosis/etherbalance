@@ -377,7 +377,7 @@ dependencies = [
  "arrayvec 0.7.1",
  "ethcontract-common",
  "ethcontract-derive",
- "futures 0.3.17",
+ "futures",
  "futures-timer",
  "hex",
  "jsonrpc-core",
@@ -444,11 +444,12 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "ethcontract",
- "futures 0.3.17",
+ "futures",
  "prometheus",
  "rouille",
  "serde",
  "structopt",
+ "tokio",
  "toml",
  "url",
  "web3",
@@ -528,12 +529,6 @@ name = "funty"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fed34cd105917e91daa4da6b3728c47b068749d6a62c59811f06ed2ac71d9da7"
-
-[[package]]
-name = "futures"
-version = "0.1.29"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1b980f2816d6ee8673b6517b52cb0e808a180efc92e5c19d02cdda79066703ef"
 
 [[package]]
 name = "futures"
@@ -621,7 +616,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "36568465210a3a6ee45e1f165136d68671471a501e632e9a98d96872222b5481"
 dependencies = [
  "autocfg",
- "futures 0.1.29",
  "futures-channel",
  "futures-core",
  "futures-io",
@@ -917,7 +911,7 @@ version = "18.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "14f7f76aef2d054868398427f6c54943cf3d1caa9a7ec7d0c38d69df97a965eb"
 dependencies = [
- "futures 0.3.17",
+ "futures",
  "futures-executor",
  "futures-util",
  "log",
@@ -1728,7 +1722,7 @@ checksum = "4919971d141dbadaa0e82b5d369e2d7666c98e4625046140615ca363e50d4daa"
 dependencies = [
  "base64",
  "bytes",
- "futures 0.3.17",
+ "futures",
  "httparse",
  "log",
  "rand 0.8.4",
@@ -2200,7 +2194,7 @@ dependencies = [
  "derive_more",
  "ethabi",
  "ethereum-types",
- "futures 0.3.17",
+ "futures",
  "futures-timer",
  "headers",
  "hex",

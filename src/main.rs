@@ -75,12 +75,12 @@ pub fn u256_to_f64(value: U256) -> f64 {
 
     (mantissa as f64) * 2.0f64.powi(exponent as i32)
 }
-
-fn main() -> Result<(), Box<dyn std::error::Error>> {
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let opt = Opt::from_args();
-    println!("Beginning service with configuration parameters {:?}", opt);
+    println!("Beginning service with configuration parameters {:#?}", opt);
     let config: config::Config = toml::from_str(&std::fs::read_to_string(opt.config)?)?;
-    println!("Monitoring accounts {:?}", config);
+    println!("Monitoring accounts {:#?}", config);
 
     // web3
     let transport =
@@ -99,7 +99,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     )?;
     let success_metric = prometheus::IntCounterVec::new(
         prometheus::Opts::new("success_counter", "Success/Failure counts"),
-        &["result"],
+        &["result", "address"],
     )?;
     let last_update_metric = prometheus::Gauge::new(
         "etherbalance_last_update",
@@ -145,7 +145,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         .set(u256_to_f64(balance));
                     success_metric
                         .with_label_values(&["success", &format!("{:#x}", params.address)])
-                        .inc()
+                        .inc();
+                    println!("Recorded at least one success.");
                 }
                 Err(err) => {
                     success_metric
