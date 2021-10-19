@@ -6,12 +6,12 @@ license = "MIT OR Apache-2.0"
 
 [dependencies]
 anyhow = "1"
-ethcontract = "0.4"
+ethcontract = "0.15"
 futures = { version = "0.3", features = ["compat"] }
-prometheus = { version = "0.8", default-features = false }
+prometheus = { version = "0.13", default-features = false }
 rouille = "3"
 serde = { version = "1", features = ["derive"] }
 structopt = "0.3"
 toml = "0.5"
 url = "2"
-web3 = { version = "0.10", default-features = false, features = ["http", "tls"] }
+web3 = { version = "0.17", default-features = false, features = ["http"] }

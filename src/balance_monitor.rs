@@ -1,7 +1,6 @@
 use crate::config;
 use anyhow::{anyhow, Error, Result};
-use ethcontract::DynTransport;
-use futures::compat::Future01CompatExt;
+use ethcontract::dyns::DynTransport;
 use std::collections::HashMap;
 use std::rc::Rc;
 use web3::error::Error as Web3Error;
@@ -133,7 +132,7 @@ async fn ether_balance(
     address: Address,
     eth_api: &web3::api::Eth<impl Transport>,
 ) -> Result<U256, Web3Error> {
-    eth_api.balance(address, None).compat().await
+    eth_api.balance(address, None).await
 }
 
 async fn erc20_balance(
