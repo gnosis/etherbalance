@@ -1,7 +1,7 @@
 mod balance_monitor;
 mod config;
 
-use anyhow::{anyhow, Result};
+use anyhow::{anyhow, Context, Result};
 use ethcontract::dyns::DynTransport;
 use prometheus::Encoder as _;
 use std::net::SocketAddr;
@@ -40,12 +40,12 @@ fn duration_from_seconds(s: &str) -> Result<Duration, std::num::ParseIntError> {
     s.parse().map(Duration::from_secs)
 }
 
-fn create_transport(url: &Url) -> Result<(web3::transports::EventLoopHandle, DynTransport)> {
+fn create_transport(url: &Url) -> Result<DynTransport> {
     // TODO: transport with timeouts
     match url.scheme() {
         "http" | "https" => {
-            let (handle, transport) = transports::Http::new(url.as_str())?;
-            Ok((handle, DynTransport::new(transport)))
+            let transport = transports::Http::new(url.as_str())?;
+            Ok(DynTransport::new(transport))
         }
         other => Err(anyhow!("unknown scheme: {}", other)),
     }
@@ -83,9 +83,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("Monitoring accounts {:?}", config);
 
     // web3
-    let (event_loop_handle, transport) =
+    let transport =
         create_transport(&opt.node).context("failed to create transport from node uri")?;
-    event_loop_handle.into_remote();
     let web3 = web3::Web3::new(transport);
 
     let monitor = balance_monitor::BalanceMonitor::new(config, web3)?;
