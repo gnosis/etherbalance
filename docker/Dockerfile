@@ -1,5 +1,5 @@
 # Dockerfile
-FROM rust:1-stretch as builder
+FROM rust:1-bullseye as builder
 # Choose a workdir
 WORKDIR /usr/src/app
 # Create blank project
@@ -13,7 +13,7 @@ COPY src src
 COPY contracts contracts
 RUN touch src/main.rs && cargo build --release
 
-FROM debian:stretch-slim
+FROM debian:bullseye-slim
 RUN apt-get update && apt-get --yes install openssl
 COPY --from=builder /usr/src/app/target/release/etherbalance /bin/
 CMD etherbalance
