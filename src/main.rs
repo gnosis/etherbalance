@@ -147,7 +147,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                         success_metric
                             .with_label_values(&["success", &format!("{:#x}", params.address)])
                             .inc();
-                        println!("Recorded at least one success.");
                     }
                     Err(err) => {
                         success_metric
@@ -158,7 +157,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                             &format!("{:#x}", params.address),
                             params.token_name,
                             err
-                        )
+                        );
                     }
                 }
             })
