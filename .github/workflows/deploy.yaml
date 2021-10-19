@@ -13,9 +13,5 @@ jobs:
       REGISTRY_URI: "gnosispm/etherbalance"
     steps:
       - uses: actions/checkout@v2
-      - name: Deploy Develop
-        if: github.ref == 'refs/heads/master'
-        run: bash docker/deploy.sh master
-      - name: Deploy Tag
-        if: startsWith(github.ref, 'refs/tags/')
+      - name: Deploy
         run: bash docker/deploy.sh ${GITHUB_REF##*/}
