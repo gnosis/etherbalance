@@ -5,13 +5,13 @@ edition = "2018"
 license = "MIT OR Apache-2.0"
 
 [dependencies]
-anyhow = "1.0.44"
-ethcontract = "0.15.3"
-futures = { version = "0.3.17", features = ["compat"] }
-prometheus = { version = "0.13.0", default-features = false }
-rouille = "3.3.1"
-serde = { version = "1.0.130", features = ["derive"] }
-structopt = "0.3.23"
-toml = "0.5.8"
-url = "2.2.2"
-web3 = { version = "0.17.0", default-features = false, features = ["http"] }
+anyhow = "1"
+ethcontract = "0.15"
+futures = { version = "0.3", features = ["compat"] }
+prometheus = { version = "0.13", default-features = false }
+rouille = "3"
+serde = { version = "1", features = ["derive"] }
+structopt = "0.3"
+toml = "0.5"
+url = "2"
+web3 = { version = "0.17", default-features = false, features = ["http"] }
