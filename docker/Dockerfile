@@ -1,19 +1,18 @@
-# Dockerfile
-FROM rust:1-bullseye as builder
-# Choose a workdir
-WORKDIR /usr/src/app
-# Create blank project
-RUN USER=root cargo init
-# Copy Cargo.toml to get dependencies
-COPY Cargo.toml .
-# This is a dummy build to get the dependencies cached
-RUN cargo build --release
-# Copy sources
-COPY src src
-COPY contracts contracts
-RUN touch src/main.rs && cargo build --release
+FROM docker.io/rust:1-slim-bullseye as cargo-build
+WORKDIR /usr/local/src/etherbalance
 
-FROM debian:bullseye-slim
-RUN apt-get update && apt-get --yes install openssl
-COPY --from=builder /usr/src/app/target/release/etherbalance /bin/
-CMD etherbalance
+# Install dependencies
+RUN apt-get update && apt-get install -y git libssl-dev pkg-config
+
+# Copy and Build Code
+COPY . .
+RUN CARGO_PROFILE_RELEASE_DEBUG=1 cargo build --release
+
+# Extract Binary
+FROM docker.io/debian:bullseye-slim
+
+# Handle signal handlers properly
+RUN apt-get update && apt-get install -y ca-certificates tini && apt-get clean
+COPY --from=cargo-build /usr/local/src/etherbalance/target/release/etherbalance /usr/local/bin/etherbalance
+
+ENTRYPOINT ["/usr/bin/tini", "etherbalance"]
