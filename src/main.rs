@@ -2,34 +2,33 @@ mod balance_monitor;
 mod config;
 
 use anyhow::{anyhow, Context, Result};
+use clap::Parser;
 use ethcontract::dyns::DynTransport;
 use prometheus::Encoder as _;
 use std::{net::SocketAddr, path::PathBuf, time::Duration};
-use structopt::StructOpt;
 use url::Url;
 use web3::{transports, types::U256};
 
-#[derive(Debug, StructOpt)]
-#[structopt()]
+#[derive(Debug, Parser)]
 struct Opt {
     /// Path to the config file.
-    #[structopt(long, parse(from_os_str))]
+    #[clap(long, parse(from_os_str))]
     config: PathBuf,
 
     /// Url of the ethereum node to communicate with.
-    #[structopt(long)]
+    #[clap(long)]
     node: Url,
 
     /// Serve the prometheus metrics at this address.
-    #[structopt(long, default_value = "0.0.0.0:8080")]
+    #[clap(long, default_value = "0.0.0.0:8080")]
     bind: SocketAddr,
 
     /// Update the balances in this interval in seconds.
-    #[structopt(long, default_value = "100", parse(try_from_str = duration_from_seconds))]
+    #[clap(long, default_value = "100", parse(try_from_str = duration_from_seconds))]
     update_interval: Duration,
 
     /// Print balances to stdout on update.
-    #[structopt(long)]
+    #[clap(long)]
     print_balances: bool,
 }
 
@@ -74,7 +73,7 @@ pub fn u256_to_f64(value: U256) -> f64 {
 }
 #[tokio::main(flavor = "current_thread")]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let opt = Opt::from_args();
+    let opt = Opt::parse();
     println!("Beginning service with configuration parameters {:#?}", opt);
     let config: config::Config = toml::from_str(&std::fs::read_to_string(opt.config)?)?;
     println!("Monitoring accounts {:#?}", config);
