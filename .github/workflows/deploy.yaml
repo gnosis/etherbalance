@@ -15,4 +15,4 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Deploy
-        run: bash docker/deploy.sh ${GITHUB_REF##*/}
+        run: docker/deploy.sh ${GITHUB_REF#refs/*/}
