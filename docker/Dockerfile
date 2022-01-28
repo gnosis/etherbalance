@@ -15,4 +15,4 @@ FROM docker.io/debian:bullseye-slim
 RUN apt-get update && apt-get install -y ca-certificates tini && apt-get clean
 COPY --from=cargo-build /usr/local/src/etherbalance/target/release/etherbalance /usr/local/bin/etherbalance
 
-ENTRYPOINT ["/usr/bin/tini", "etherbalance"]
+ENTRYPOINT ["/usr/bin/tini", "etherbalance", "--"]
