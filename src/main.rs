@@ -4,13 +4,10 @@ mod config;
 use anyhow::{anyhow, Context, Result};
 use ethcontract::dyns::DynTransport;
 use prometheus::Encoder as _;
-use std::net::SocketAddr;
-use std::path::PathBuf;
-use std::time::Duration;
+use std::{net::SocketAddr, path::PathBuf, time::Duration};
 use structopt::StructOpt;
 use url::Url;
-use web3::transports;
-use web3::types::U256;
+use web3::{transports, types::U256};
 
 #[derive(Debug, StructOpt)]
 #[structopt()]
@@ -75,7 +72,7 @@ pub fn u256_to_f64(value: U256) -> f64 {
 
     (mantissa as f64) * 2.0f64.powi(exponent as i32)
 }
-#[tokio::main]
+#[tokio::main(flavor = "current_thread")]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let opt = Opt::from_args();
     println!("Beginning service with configuration parameters {:#?}", opt);
