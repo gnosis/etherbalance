@@ -1,11 +1,12 @@
 use crate::config;
 use anyhow::{anyhow, Error, Result};
 use ethcontract::dyns::DynTransport;
-use std::collections::HashMap;
-use std::rc::Rc;
-use web3::error::Error as Web3Error;
-use web3::types::{Address, U256};
-use web3::Transport;
+use std::{collections::HashMap, rc::Rc};
+use web3::{
+    error::Error as Web3Error,
+    types::{Address, U256},
+    Transport,
+};
 
 #[derive(Clone, Debug)]
 pub struct BalanceMonitor {
