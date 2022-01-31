@@ -1,23 +1,17 @@
 mod balance_monitor;
 mod config;
 
-use anyhow::{anyhow, Context, Result};
+use anyhow::Result;
 use clap::Parser;
-use ethcontract::dyns::DynTransport;
 use prometheus::Encoder as _;
 use std::{net::SocketAddr, path::PathBuf, time::Duration};
-use url::Url;
-use web3::{transports, types::U256};
+use web3::types::U256;
 
 #[derive(Debug, Parser)]
 struct Opt {
     /// Path to the config file.
     #[clap(long, parse(from_os_str))]
     config: PathBuf,
-
-    /// Url of the ethereum node to communicate with.
-    #[clap(long)]
-    node: Url,
 
     /// Serve the prometheus metrics at this address.
     #[clap(long, default_value = "0.0.0.0:8080")]
@@ -36,26 +30,15 @@ fn duration_from_seconds(s: &str) -> Result<Duration, std::num::ParseIntError> {
     s.parse().map(Duration::from_secs)
 }
 
-fn create_transport(url: &Url) -> Result<DynTransport> {
-    // TODO: transport with timeouts
-    match url.scheme() {
-        "http" | "https" => {
-            let transport = transports::Http::new(url.as_str())?;
-            Ok(DynTransport::new(transport))
-        }
-        other => Err(anyhow!("unknown scheme: {}", other)),
-    }
-}
-
-fn print_balance(address_name: &str, token_name: &str, balance: &Result<U256>) {
+fn print_balance(address_name: &str, network_name: &str, token_name: &str, balance: &Result<U256>) {
     match balance {
         Ok(balance) => println!(
-            "address {} {} balance is {}",
-            address_name, token_name, balance
+            "address {} on network {} token {} balance is {}",
+            address_name, network_name, token_name, balance
         ),
         Err(err) => println!(
-            "failed to get balance for address {} token {}: {}",
-            address_name, token_name, err
+            "failed to get balance for address {} on network {} token {}: {}",
+            address_name, network_name, token_name, err
         ),
     }
 }
@@ -78,12 +61,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let config: config::Config = toml::from_str(&std::fs::read_to_string(opt.config)?)?;
     println!("Monitoring accounts {:#?}", config);
 
-    // web3
-    let transport =
-        create_transport(&opt.node).context("failed to create transport from node uri")?;
-    let web3 = web3::Web3::new(transport);
-
-    let monitor = balance_monitor::BalanceMonitor::new(config, web3)?;
+    let monitor = balance_monitor::BalanceMonitor::new(config)?;
 
     // metrics
     let balance_metric = prometheus::GaugeVec::new(
@@ -91,11 +69,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             "etherbalance_balance",
             "The ether or IERC20 balance of an ethereum address.",
         ),
-        &["address_name", "token_name", "address", "tag"],
+        &["address_name", "token_name", "address", "tag", "network"],
     )?;
     let success_metric = prometheus::IntCounterVec::new(
         prometheus::Opts::new("success_counter", "Success/Failure counts"),
-        &["result", "address"],
+        &["result", "address", "network"],
     )?;
     let last_update_metric = prometheus::Gauge::new(
         "etherbalance_last_update",
@@ -128,7 +106,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         monitor
             .do_with_balances(|params| {
                 if print_balances {
-                    print_balance(params.address_name, params.token_name, &params.balance);
+                    print_balance(
+                        params.address_name,
+                        params.network_name,
+                        params.token_name,
+                        &params.balance,
+                    );
                 }
                 match params.balance {
                     Ok(balance) => {
@@ -138,15 +121,24 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                                 params.token_name,
                                 &format!("{:#x}", params.address),
                                 params.tag,
+                                params.network_name,
                             ])
                             .set(u256_to_f64(balance));
                         success_metric
-                            .with_label_values(&["success", &format!("{:#x}", params.address)])
+                            .with_label_values(&[
+                                "success",
+                                &format!("{:#x}", params.address),
+                                params.network_name,
+                            ])
                             .inc();
                     }
                     Err(err) => {
                         success_metric
-                            .with_label_values(&["failure", &format!("{:#x}", params.address)])
+                            .with_label_values(&[
+                                "failure",
+                                &format!("{:#x}", params.address),
+                                params.network_name,
+                            ])
                             .inc();
                         println!(
                             "failed to get balance for address {} token {}: {}",
