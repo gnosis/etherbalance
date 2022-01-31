@@ -37,9 +37,16 @@ pub struct ConfigAddress {
     pub tag: Option<String>,
 }
 
+#[derive(Debug, Deserialize)]
+pub struct Network {
+    pub name: String,
+    pub url: String,
+    pub tokens: HashMap<String, Address_>,
+    pub addresses: HashMap<String, ConfigAddress>,
+}
+
 /// The user facing config file.
 #[derive(Debug, Deserialize)]
 pub struct Config {
-    pub tokens: HashMap<String, Address_>,
-    pub addresses: HashMap<String, ConfigAddress>,
+    pub networks: Vec<Network>,
 }
